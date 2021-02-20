@@ -1,5 +1,7 @@
 # Top level makefile for library
 
+include ../Kernel/quiet.mk
+
 CFLAGS += -I../Kernel/include
 
 all: tools/syscall tools/binman tools/fcc tools/syscall_6303 \
@@ -14,47 +16,35 @@ clean:
 	rm -f tools/syscall-z88dk tools/syscall_6502 tools/syscall_6809 tools/syscall_68000 tools/syscall-scc6809
 	rm -f tools/syscall_pdp11 tools/syscall_8080 tools/syscall_6303
 
-tools/syscall: tools/syscall.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
+SYSCALL :=								\
+	tools/syscall							\
+	tools/syscall-scc6809						\
+	tools/syscall_6303						\
+	tools/syscall_6502						\
+	tools/syscall_6809						\
+	tools/syscall_8080						\
+	tools/syscall_68000						\
+	tools/syscall_esp8266						\
+	tools/syscall_pdp11
 
-tools/syscall_6303: tools/syscall_6303.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
+TOOLS :=								\
+	tools/ack2fuzix							\
+	tools/binman							\
+	tools/fuzixlib							\
+	tools/liberror							\
+	tools/relocbin							\
+	$(SYSCALL)
 
-tools/syscall_6502: tools/syscall_6502.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
+$(SYSCALL): ../Kernel/include/syscall_name.h
 
-tools/syscall_8080: tools/syscall_8080.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
+$(TOOLS:%=%.o): %.o: %.c
+	$(QUIET_CC)$(CC) $(CFLAGS) -c -o $@ $<
 
-tools/syscall_68000: tools/syscall_68000.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/syscall_6809: tools/syscall_6809.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/syscall-scc6809: tools/syscall-scc6809.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/syscall_esp8266: tools/syscall_esp8266.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/syscall_pdp11: tools/syscall_pdp11.c ../Kernel/include/syscall_name.h
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/binman: tools/binman.c
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/relocbin: tools/relocbin.c
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/liberror: tools/liberror.c
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/ack2fuzix: tools/ack2fuzix.c
-	$(CC) $(CFLAGS) -o $@ $<
-
-tools/fuzixlib: tools/fuzixlib.c
-	$(CC) $(CFLAGS) -o $@ $<
+define tool_rule =
+$1: %: %.o
+	$$(QUIET_LD)$$(CC) $$(LDFLAGS) -o $$@ $$<
+endef
+$(foreach tool,$(TOOLS),$(eval $(call tool_rule,$(tool))))
 
 install:
 ifeq ($(USERCPU),z80)
