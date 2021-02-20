@@ -105,8 +105,8 @@ usermem_std-z180.rel:	usermem_std-z180.s usermem_std-z80.s
 lowlevel-z180.rel:	lowlevel-z180.s lowlevel-z80.s
 
 platform:
-	-rm -f platform
-	ln -sf platform-$(TARGET) platform
+	-$(QUIET_RM)rm -f platform
+	$(QUIET_GEN)ln -sf platform-$(TARGET) platform
 
 target: include/kernel.h $(OBJS) | platform
 	+$(MAKE) -C platform-$(TARGET)
