@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     word = 0x1234 - sum;	/* What do we need to put in the last word ? */
     *p = htons(word);
 
+#ifdef DEBUG
     p = bootblock;
     sum = 0;
 
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
         p++;
     }
     printf("Sum %04X\n", sum);
+#endif
 
     if (lseek(fd, 0L, SEEK_SET) == -1) {
         perror("lseek");
