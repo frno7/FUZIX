@@ -160,6 +160,7 @@ $(AOBJS): %$(BINEXT): %$(ASMEXT)
 	$(QUIET_AS)$(CROSS_AS) $(ASOPTS) -o $*$(BINEXT) $<
 
 TOOLS :=								\
+	tools/atariboot							\
 	tools/bbc							\
 	tools/filesizes							\
 	tools/fontexpand						\
