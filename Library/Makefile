@@ -30,6 +30,7 @@ SYSCALL :=								\
 TOOLS :=								\
 	tools/ack2fuzix							\
 	tools/binman							\
+	tools/fcc							\
 	tools/fuzixlib							\
 	tools/liberror							\
 	tools/relocbin							\
