@@ -159,30 +159,33 @@ $(CS5OBJS): %$(BINEXT): %.c
 $(AOBJS): %$(BINEXT): %$(ASMEXT)
 	$(QUIET_AS)$(CROSS_AS) $(ASOPTS) -o $*$(BINEXT) $<
 
+TOOLS :=								\
+	tools/bbc							\
+	tools/filesizes							\
+	tools/fontexpand						\
+	tools/make4x6							\
+	tools/makejv3							\
+	tools/makeversion						\
+	tools/map_syscall						\
+	tools/trslabel
+
+$(TOOLS:%=%.o): %.o: %.c
+	$(QUIET_CC)$(CC) $(CFLAGS) -c -o $@ $<
+
+define tool_rule =
+$1: %: %.o
+	$$(QUIET_LD)$$(CC) $$(LDFLAGS) -o $$@ $$<
+endef
+$(foreach tool,$(TOOLS),$(eval $(call tool_rule,$(tool))))
+
 version.c: tools/makeversion
 	$(QUIET_GEN)tools/makeversion $(VERSION) $(SUBVERSION) $(TARGET)
 
 font8x8_exp2.c: font8x8.c tools/fontexpand
 	$(QUIET_GEN)tools/fontexpand <font8x8.c >font8x8_exp2.c
 
-tools/makeversion: tools/makeversion.c
-
-tools/filesizes: tools/filesizes.c
-
-tools/map_syscall: tools/map_syscall.c
-
-tools/make4x6: tools/make4x6.c
-
-tools/bbc: tools/bbc.c
-
-tools/makejv3: tools/makejv3.c
-
-tools/trslabel: tools/trslabel.c
-
-tools/fontexpand: tools/fontexpand.c
-
 font4x6.c: tools/make4x6
-	tools/make4x6 >font4x6.c
+	$(QUIET_GEN)tools/make4x6 >font4x6.c
 
 clean:
 	rm -rf platform
