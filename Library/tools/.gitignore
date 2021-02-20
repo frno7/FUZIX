@@ -13,3 +13,5 @@
 /syscall_6809
 /syscall_8080
 /syscall_msp430x
+/syscall_esp8266
+/syscall_pdp11

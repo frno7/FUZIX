@@ -4,28 +4,16 @@ include ../Kernel/quiet.mk
 
 CFLAGS += -I../Kernel/include
 
-all: tools/syscall tools/binman tools/fcc tools/syscall_6303 \
-     tools/syscall_6502 tools/syscall_68000 tools/syscall_8080 \
-     tools/syscall_6809 tools/syscall-scc6809 \
-     tools/ack2fuzix tools/binman \
-     tools/liberror tools/relocbin tools/fuzixlib
-
-clean:
-	rm -f tools/syscall tools/binman tools/fcc tools/fsize tools/liberror
-	rm -f tools/relocbin tools/ack2fuzix tools/fuzixlib
-	rm -f tools/syscall-z88dk tools/syscall_6502 tools/syscall_6809 tools/syscall_68000 tools/syscall-scc6809
-	rm -f tools/syscall_pdp11 tools/syscall_8080 tools/syscall_6303
-
 SYSCALL :=								\
 	tools/syscall							\
-	tools/syscall-scc6809						\
 	tools/syscall_6303						\
 	tools/syscall_6502						\
 	tools/syscall_6809						\
 	tools/syscall_8080						\
 	tools/syscall_68000						\
 	tools/syscall_esp8266						\
-	tools/syscall_pdp11
+	tools/syscall_pdp11						\
+	tools/syscall-scc6809
 
 TOOLS :=								\
 	tools/ack2fuzix							\
@@ -35,6 +23,12 @@ TOOLS :=								\
 	tools/liberror							\
 	tools/relocbin							\
 	$(SYSCALL)
+
+all: $(TOOLS)
+
+.PHONY:
+clean:
+	$(QUIET_RM)$(RM) -f *.o $(TOOLS)
 
 $(SYSCALL): ../Kernel/include/syscall_name.h
 
